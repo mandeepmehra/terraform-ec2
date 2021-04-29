@@ -11,11 +11,16 @@ resource "aws_instance" "webserver" {
   tags = {
     "Name" = "webserver-mandeep"
   }
+
+  key_name ="mandeep-ohio"
 }
+
 
 output "webserveripaddress" {
   value = aws_instance.webserver.public_ip
 }
+
+
 
 resource "aws_security_group" "websg" {
   name = "webserversg"
