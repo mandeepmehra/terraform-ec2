@@ -11,8 +11,42 @@ resource "aws_instance" "webserver" {
   tags = {
     "Name" = "webserver-mandeep"
   }
+  # Key created manually in AWS Console
+  key_name = "mandeep-ohio-test"
 
-  key_name ="mandeep-ohio"
+  provisioner "local-exec" {
+    command = "echo ${self.public_ip} > ipaddress.txt"
+  }
+  provisioner "local-exec" {
+    command = "echo ${self.private_ip} >> ipaddress.txt"
+  }
+
+  provisioner "file" {
+    source      = "listing.sh"
+    destination = "/tmp/listing.sh"
+    connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file("./mandeep-ohio-test.pem")
+    }
+  }
+
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/listing.sh",
+      "/tmp/listing.sh"
+    ]
+    connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ubuntu"
+      private_key = file("./mandeep-ohio-test.pem")
+    }
+
+  }
+
 }
 
 
